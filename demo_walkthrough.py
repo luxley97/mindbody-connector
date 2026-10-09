@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-录屏专用演示脚本（demo_walkthrough.py）
-========================================
-用途：录制 30-60 秒演示视频。运行后自动播放一个"AI 助手通过 Mindbody 连接器
-预约门店"的完整剧本，含打字机效果和停顿，直接对着它录屏即可。
+Screen-recording demo script (demo_walkthrough.py)
+==================================================
+Plays a scripted ~55-second walkthrough of an AI assistant booking an
+appointment at a Mindbody business through this connector. Just screen-record
+the terminal while it runs. No credentials or network required.
 
-用法：
-    python demo_walkthrough.py          # 正常速度（约 55 秒）
-    python demo_walkthrough.py --fast   # 快速自检（不等停顿）
+Usage:
+    python demo_walkthrough.py          # normal speed (~55 s, for recording)
+    python demo_walkthrough.py --fast   # quick self-check (no pauses)
 
-录制方法（Windows 自带，无需装软件）：
-    1. 把这个终端窗口拉大到全屏，字体调大（Ctrl + 滚轮）
-    2. 按 Win + Alt + R 开始录制，再按一次停止
-    3. 视频自动保存到 C:\\Users\\<你>\\Videos\\Captures
+Recording (built into Windows, nothing to install):
+    1. Maximize the terminal window and enlarge the font (Ctrl + mouse wheel)
+    2. Press Win + Alt + R to start recording, press again to stop
+    3. The video is saved to C:\\Users\\<you>\\Videos\\Captures
 """
 import sys
 import time
 
 FAST = "--fast" in sys.argv
-PAUSE = 0.05 if FAST else 0.9      # 每步之间的停顿（秒）
-TYPE = 0.001 if FAST else 0.035    # 打字机每字间隔（秒）
+PAUSE = 0.05 if FAST else 0.9      # pause between steps (seconds)
+TYPE = 0.001 if FAST else 0.035    # typewriter delay per character (seconds)
 
 
 def say(text, color=None, delay=PAUSE, typewriter=False):
@@ -40,37 +41,41 @@ def say(text, color=None, delay=PAUSE, typewriter=False):
 def main():
     print()
     say("=" * 56, "note", 0.3)
-    say("  Mindbody Connector — AI Agent Booking Demo (sandbox)", "note", 1.2)
+    say("  Mindbody Connector - AI Agent Booking Demo (sandbox)", "note", 1.2)
     say("=" * 56, "note", 1.5)
     print()
 
-    say("消费者：明天下午想做 60 分钟的深层组织按摩，帮我看看有什么时段？",
-        "user", 1.8, typewriter=True)
+    say("Consumer: I'd like a 60-minute deep tissue massage tomorrow",
+        "user", 0.3, typewriter=True)
+    say("          afternoon. What time slots are available?", "user", 1.8, typewriter=True)
 
-    say("→ [tool] search_services(service_type=\"massage\")", "tool", 1.0)
-    say("  找到：60-min Deep Tissue Massage · $89 · Serenity Spa", "note", 1.2)
-    say("→ [tool] check_availability(service_id=101, date=明天)", "tool", 1.0)
-    say("  空闲时段：13:00 / 14:00 / 16:30", "note", 1.6)
+    say('-> [tool] search_services(service_type="massage")', "tool", 1.0)
+    say("   Found: 60-min Deep Tissue Massage - $89 - Serenity Spa", "note", 1.2)
+    say('-> [tool] check_availability(service_id=101, date=tomorrow)', "tool", 1.0)
+    say("   Available: 1:00 PM / 2:00 PM / 4:30 PM", "note", 1.6)
 
-    say("消费者：订 14:00 那个。", "user", 1.6, typewriter=True)
+    say("Consumer: Book the 2:00 PM slot, please.", "user", 1.6, typewriter=True)
 
-    say("→ [tool] book_appointment(...)", "tool", 0.8)
-    say("  ✗ booking_disabled —— 写操作默认关闭，商家尚未授权", "warn", 2.0)
+    say("-> [tool] book_appointment(...)", "tool", 0.8)
+    say("   X booking_disabled - writes are OFF by default; merchant has not opted in yet",
+        "warn", 2.0)
 
-    say("  [旁白] 商家在 Mindbody 后台一键授权后，写保护开关打开……", "note", 2.2)
+    say("   [narration] The merchant flips one switch in Mindbody to authorize...",
+        "note", 2.2)
 
-    say("→ [tool] book_appointment(...)  # 开关已打开", "tool", 0.8)
-    say("  ✓ appointment_id=987654 · status=Booked · 明天 14:00", "ok", 1.8)
+    say("-> [tool] book_appointment(...)   # switch now ON", "tool", 0.8)
+    say("   OK appointment_id=987654 - status=Booked - tomorrow 2:00 PM", "ok", 1.8)
 
-    say("消费者：临时有事，帮我取消。", "user", 1.6, typewriter=True)
+    say("Consumer: Something came up. Please cancel it.", "user", 1.6, typewriter=True)
 
-    say("→ [tool] cancel_appointment(appointment_id=987654)", "tool", 0.8)
-    say("  ✓ status=Cancelled", "ok", 1.8)
+    say("-> [tool] cancel_appointment(appointment_id=987654)", "tool", 0.8)
+    say("   OK status=Cancelled", "ok", 1.8)
 
     print()
-    say("要点：读操作开箱即用；写操作（预约/取消）双重开关保护，", "note", 0.6)
-    say("默认关闭、按门店授权 —— 商家始终握有控制权。", "note", 2.5)
-    say("— demo 结束（沙盒环境，无真实门店数据）—", "note", 1.0)
+    say("Key point: reads work out of the box; writes (book/cancel) sit behind", "note", 0.6)
+    say("two separate switches, OFF by default and enabled per site -", "note", 0.6)
+    say("the merchant always stays in control.", "note", 2.5)
+    say("- end of demo (sandbox environment, no real business data) -", "note", 1.0)
 
 
 if __name__ == "__main__":
